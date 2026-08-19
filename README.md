@@ -1,6 +1,6 @@
 # Hoken
 
-*Hoken* (保険) is Japanese for "insurance".
+
 
 A local-first, installable PWA that evaluates insurance coverage, payouts and cost, and flags
 **gaps, duplication and points of attention**. It ships with a Singapore rule pack (MediShield
