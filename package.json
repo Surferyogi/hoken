@@ -1,0 +1,20 @@
+{
+  "name": "hoken",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Hoken - a local-first PWA that evaluates insurance coverage, payouts and cost, and flags gaps, duplication and points of attention (Singapore rule pack).",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && node scripts/stamp-sw.js",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^5.4.11"
+  }
+}
