@@ -94,8 +94,25 @@ npm run preview
    `.github/workflows/deploy.yml` builds the site and deploys it.
 5. The site lands at `https://<you>.github.io/<repo>/`.
 
-The workflow works out the Vite `base` path from the repository name, so a project site and a
-`<you>.github.io` user site both work without editing anything.
+> **Step 3 is the one that bites.** If Source is left on *Deploy from a branch*, GitHub serves the
+> repository as-is instead of the built site. The browser then requests `/src/main.jsx` from the
+> domain root, gets a 404, and you see a blank screen. From v2026:AUG:19-17:31 the page detects
+> this and tells you on screen rather than failing silently.
+
+`vite.config.js` uses a **relative** base, so one build works at a project page, a user page, or any
+subfolder — nothing to configure per repository.
+
+### Alternative: no GitHub Actions
+
+If you would rather not use Actions, build into `docs/` and let Pages serve that folder:
+
+```bash
+npm run build:docs
+git add docs && git commit -m "build" && git push
+```
+
+Then set **Settings → Pages → Source → Deploy from a branch**, branch `main`, folder `/docs`.
+Trade-off: build output lives in git and you must re-run `build:docs` after every change.
 
 ### Install it as an app
 
@@ -110,6 +127,29 @@ prompt (Android Chrome). It then runs full-screen and works offline via the serv
 **Bump it every time `src/App.jsx` changes**, and add a line to `CHANGELOG` in the same file. The
 version is shown in the header, in the footer and on the Sources tab, and the build script stamps
 it into the service worker cache name so a new deploy invalidates the old cache.
+
+---
+
+## Troubleshooting
+
+### The page is blank
+
+Open DevTools (F12) → Console and Network, and match the symptom:
+
+| What you see | Cause | Fix |
+|---|---|---|
+| `404` on `/src/main.jsx`, and `manifest.webmanifest` 404s while `package.json` loads fine | Pages is serving the raw repository | **Settings → Pages → Source → GitHub Actions**, then re-run the workflow |
+| `404` on `/assets/index-*.js` | Built with an absolute base and hosted in a subfolder | Rebuild with the current `vite.config.js` (relative base) |
+| `Access to script … from origin 'null' has been blocked by CORS` | You double-clicked `index.html` | ES modules cannot load over `file://` by browser design. Run `npx vite preview`, or `python3 -m http.server`, and open the `http://` address |
+| Old version keeps loading after a deploy | A previous service worker is serving its cache | DevTools → Application → Service Workers → Unregister, then hard-reload. Each build stamps a new cache name, so this self-corrects on the second load |
+
+From v2026:AUG:19-17:31 the app diagnoses the first three itself and prints the reason on the page
+instead of showing nothing.
+
+### A number looks wrong
+
+Every figure traces to a source. Open the **Sources** tab, find the document or official page it came
+from, and check it. If a figure has no source it is not in the app — it shows as *Not available*.
 
 ---
 

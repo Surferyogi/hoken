@@ -1,9 +1,14 @@
 // Version stamp convention: vYYYY:MMM:DD-HH:MM (Asia/Singapore).
 // Bump this every time src/App.jsx is changed.
-export const APP_VERSION = 'v2026:AUG:19-17:14'
+export const APP_VERSION = 'v2026:AUG:19-17:31'
 
 // Changelog - newest first. Keep one line per released version.
 export const CHANGELOG = [
+  {
+    version: 'v2026:AUG:19-17:31',
+    notes:
+      'Fixed the blank screen on GitHub Pages. Vite base is now relative, so the same build works at a project page, a user page, any subfolder, or a file:// path. Added a boot guard that explains a failure instead of showing an empty page, a React error boundary, a noscript message, and a build:docs script for branch-based Pages. No policy data, rule or calculation changed.',
+  },
   {
     version: 'v2026:AUG:19-17:14',
     notes:

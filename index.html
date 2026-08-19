@@ -12,9 +12,79 @@
     <link rel="icon" type="image/png" href="./icon-192.png" />
     <link rel="apple-touch-icon" href="./icon-192.png" />
     <title>Hoken - Insurance Coverage Analyser</title>
+    <style>
+      html, body { margin: 0; background: #0b1120; color: #e8edf7;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+      #boot-error { max-width: 640px; margin: 0 auto; padding: 32px 20px; line-height: 1.6; }
+      #boot-error h1 { font-size: 19px; margin: 0 0 4px; }
+      #boot-error h2 { font-size: 14px; margin: 22px 0 6px; color: #ffa94d; }
+      #boot-error code, #boot-error pre { background: #16203a; border: 1px solid #27334f;
+        border-radius: 6px; padding: 2px 6px; font-size: 12.5px; }
+      #boot-error pre { padding: 10px; overflow-x: auto; white-space: pre-wrap; word-break: break-all; }
+      #boot-error ol { padding-left: 20px; }
+      #boot-error .muted { color: #a8b5cd; font-size: 13.5px; }
+    </style>
   </head>
   <body>
     <div id="root"></div>
+
+    <noscript>
+      <div id="boot-error">
+        <h1>Hoken needs JavaScript</h1>
+        <p class="muted">This app runs entirely in your browser, so JavaScript has to be enabled.
+        Nothing is sent to a server either way.</p>
+      </div>
+    </noscript>
+
+    <!--
+      Blank-screen guard. If the bundle never executes - wrong base path, a file that
+      404s, a syntax error - React never mounts and the user sees nothing at all.
+      This says what went wrong instead of failing silently.
+    -->
+    <script>
+      (function () {
+        var errors = []
+        window.addEventListener('error', function (e) {
+          errors.push((e.message || 'Load error') + (e.filename ? ' — ' + e.filename : ''))
+        }, true)
+        window.addEventListener('unhandledrejection', function (e) {
+          errors.push('Unhandled promise rejection: ' + (e.reason && e.reason.message ? e.reason.message : e.reason))
+        })
+
+        function esc(s) {
+          return String(s).replace(/[&<>]/g, function (c) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]
+          })
+        }
+
+        function report() {
+          var root = document.getElementById('root')
+          if (!root || root.childElementCount > 0) return
+
+          var servingSource = document.querySelector('script[src*="/src/main.jsx"]')
+          var hint = servingSource
+            ? 'This page is the <b>source</b> index.html, not the built site. On GitHub, that means Pages is set to <b>Deploy from a branch</b> and is serving the repository as-is. Set <b>Settings &rarr; Pages &rarr; Source</b> to <b>GitHub Actions</b>, then re-run the workflow.'
+            : location.protocol === 'file:'
+              ? 'You opened this from a <code>file://</code> path. Serve the folder over HTTP instead - from the project folder run <code>npx vite preview</code>, or <code>python3 -m http.server</code>.'
+              : 'The app bundle did not execute. Check the Network tab for a request returning 404 - that file is the one that is missing.'
+
+          var el = document.createElement('div')
+          el.id = 'boot-error'
+          el.innerHTML =
+            '<h1>Hoken could not start</h1>' +
+            '<p class="muted">The page loaded but the app never mounted, so this message is standing in for a blank screen.</p>' +
+            '<h2>Most likely cause</h2><p>' + hint + '</p>' +
+            '<h2>Address</h2><pre>' + esc(location.href) + '</pre>' +
+            (errors.length
+              ? '<h2>Errors the browser reported</h2><pre>' + esc(errors.join('\n')) + '</pre>'
+              : '<h2>Errors the browser reported</h2><p class="muted">None captured. Open DevTools &rarr; Network and look for a red 404.</p>')
+          document.body.appendChild(el)
+        }
+
+        window.addEventListener('load', function () { setTimeout(report, 1200) })
+      })()
+    </script>
+
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

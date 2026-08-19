@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build && node scripts/stamp-sw.js",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:docs": "VITE_OUT_DIR=docs vite build && VITE_OUT_DIR=docs node scripts/stamp-sw.js && cp docs/index.html docs/404.html && touch docs/.nojekyll"
   },
   "dependencies": {
     "react": "^18.3.1",
