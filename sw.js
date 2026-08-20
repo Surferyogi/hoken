@@ -6,7 +6,7 @@
  * The cache name is stamped at build time by scripts/stamp-sw.js so a new build
  * invalidates the old cache instead of serving a stale bundle.
  */
-const CACHE_NAME = 'hoken-v2026-AUG-20-00-02'
+const CACHE_NAME = 'hoken-v2026-AUG-20-10-46'
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png']
 
 self.addEventListener('install', (event) => {
@@ -25,6 +25,9 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('message', (event) => {
   if (event.data === 'SKIP_WAITING') self.skipWaiting()
+  if (event.data === 'CLEAR_CACHES') {
+    event.waitUntil(caches.keys().then((keys) => Promise.all(keys.map((k) => caches.delete(k)))))
+  }
 })
 
 self.addEventListener('fetch', (event) => {
@@ -35,8 +38,10 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== self.location.origin) return
 
   if (req.mode === 'navigate') {
+    // cache: 'no-store' stops the browser's own HTTP cache from handing us a stale
+    // index.html, which is what makes a redeploy look like it never happened.
     event.respondWith(
-      fetch(req)
+      fetch(new Request(req.url, { cache: 'no-store', credentials: 'same-origin' }))
         .then((res) => {
           const copy = res.clone()
           caches.open(CACHE_NAME).then((c) => c.put('./index.html', copy))
