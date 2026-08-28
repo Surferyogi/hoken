@@ -6,7 +6,7 @@
  * The cache name is stamped at build time by scripts/stamp-sw.js so a new build
  * invalidates the old cache instead of serving a stale bundle.
  */
-const CACHE_NAME = 'hoken-v2026-AUG-28-23-45'
+const CACHE_NAME = 'hoken-v2026-AUG-29-00-25'
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png']
 
 self.addEventListener('install', (event) => {
